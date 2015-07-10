@@ -20,6 +20,8 @@ class Member:
 		fitness is calculated by taking the dom
 
 		TODO: implement multiple alleles
+		TODO: add age, sex, gestation, child_rearing,
+		lifespan, sexual_maturity attributes
 
 		attributes of type:
 		dominant: boolean -> if allele is dom/rec
@@ -28,9 +30,10 @@ class Member:
 		self._m_type = m_type
 		self._p_type = p_type
 		self._total_fitness = self._calcFitness()
+		self._phenotype = self._calcPhenotype()
 
 	"""
-	finds the overall fitness for the individual 
+	finds the overall fitness for the member 
 	@private
 	"""
 	def _calcFitness(self):
@@ -49,7 +52,21 @@ class Member:
 				fitness = self._m_type.getPref(_REC)
 		return fitness		
 
+	"""
+	finds the phenotype of the member
+	@private
+	"""
+	def _calcPhenotype(self):
+		if self._m_type.getDom() == True:
+			return True
+		if self._p_type.getDom() == True:
+			return True
+		return False
+
 	""" get method for member fitness"""
 	def getFitness(self):
 		return self._total_fitness
+	""" get method for member phenotype"""
+	def getPhenotype(self):
+		return self._phenotype
 
