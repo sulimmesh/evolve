@@ -10,7 +10,7 @@ threshold = st.norm.ppf(param)
 
 success = 0
 failure = 0
-runs = 10000
+runs = 100
 
 for i in range(0,runs):
 	x = random.normalvariate(0,1)
