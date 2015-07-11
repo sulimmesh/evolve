@@ -13,7 +13,7 @@ class Member:
 
 	def __init__(self, m_type, p_type, age, sex, gestation,
 		child_rearing, lifespan, sexual_maturity, 
-		isGestating=False, isRearing=False):
+		isGestating=False, isRearing=False, child=None):
 		"""
 		m_type and p_type are classes with
 		information about dominant/recessive and
@@ -53,6 +53,7 @@ class Member:
 		self._sexual_maturity = sexual_maturity
 		self._isGestating = isGestating
 		self._isRearing = isRearing
+		self._child = child
 
 	"""
 	finds the overall fitness for the member 
@@ -87,6 +88,7 @@ class Member:
 
 	"""
 	returns whether the member is available for mating
+	@private
 	"""
 	def _isAvailable(self):
 		if self._age >= self._sexual_maturity:
@@ -97,10 +99,42 @@ class Member:
 		else:
 			return False
 
+	""" 
+	creates a child member within a gestating female member
+	@private
+	"""		
+	def _createChild(self, paternal_type):
+		if random.randint(0,1) = 1:
+			maternal_type = self._m_type
+		else:
+			maternal_type = self._p_type
+		self._child = [maternal_type, paternal_type,0]
+
+	"""
+	takes the child attribute and returns a new member
+	"""
+	def _birth(self):
+		if self._isGestating and self._child[2] >= self._gestation:
+			m_type = self._child[0]
+			p_type = self._child[1]
+			#these numbers need to change and are just placeholders
+			#for now
+			newMember = Member(m_type,p_type,0,
+				random.choice([True, False]),2,2,15,2)
+			return newMember
+		else:
+			return None
+
 	""" takes an available member and impregnates them if female """
-	def mate(self):
+	def mate(self, partner):
 		if self._isAvailable() and self._sex:
+			partner_type = None
+			if random.randint(0,1) = 1:
+				partner_type = partner.getMaternalType()
+			else:
+				partner_type = partner.getPaternalType()
 			self._isGestating = True
+			self._createChild(partner_type)
 			return True
 		elif self.isAvailable() and !self._sex:
 			return True
@@ -112,6 +146,14 @@ class Member:
 	"""
 	def age(self):
 		self._age += 1
+		if self._isGestating:
+			self._child[2] += 1
+			if self._child[2] >= self._gestation:
+				return self._birth()
+			else:
+				return None
+		else:
+			return None
 
 	""" status checkers for statistical purposes"""
 	def isGestating(self):
@@ -122,7 +164,7 @@ class Member:
 	""" get methods"""
 	def getFitness(self):
 		return self._total_fitness
-	def getPhenotype(self):
+	def getPhenotype(self):s
 		return self._phenotype
 	def getAge(self):
 		return self._age
@@ -138,6 +180,10 @@ class Member:
 		return self._sexual_maturity
 	def getAvailability(self):
 		return self._isAvailable()
+	def getPaternalType(self):
+		return self._p_type
+	def getMaternalType(self):
+		return self._m_type
 
 
 

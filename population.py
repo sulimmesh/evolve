@@ -1,6 +1,7 @@
 import member
 import trait 
 import random
+import scipy.stats as st
 
 class Population:
 	"""
@@ -22,12 +23,6 @@ class Population:
 		self._preference = preference
 		self._population = self._genPopulation()
 
-
-	def getSize(self):
-		return self._size
-
-	def getPop(self):
-		return self._population
 	"""
 	method to create the dom/rec traits
 	"""
@@ -36,7 +31,6 @@ class Population:
 		rec = trait.Trait(False, preference)
 		traits = [dom, rec]
 		return traits
-
 	"""
 	method to generate the population from members
 	@private
@@ -54,6 +48,69 @@ class Population:
 				traits[index_2])
 			population.append(ind)
 		return population
+
+	""" returns nothing. removes dead members from the population """
+	def agePop(self):
+		for ind in self._population:
+			newMember = ind.age()
+			if newMember != None:
+				self._population.append(newMember)
+			if ind.getAge() > ind.getLifespan():
+				self._population.remove(ind)
+
+	""" 
+	returns nothing.
+	sorts the population into eligble male and female lists.
+	runs the mating algorithm on the two lists and finishes when
+	all eligble females have had 3 chances to get pregnant. If they
+	fail, then they must wait for the next cycle.
+	"""
+	def runMating(self):
+		maleList = []
+		femaleList = []
+		femRuns = 0
+		for ind in self._population:
+			if ind.getAvailability():
+				if ind.getSex():
+					#need to check if we've run on this female
+					femaleList.append([ind,False])
+				else: 
+					maleList.append(ind)
+		while len(femaleList) > 0 or femRuns < 1:
+			male = random.choice(maleList)
+			tempFemale = random.choice(femaleList)
+			index = femaleList.index(tempFemale)
+			female = tempFemale[0]
+			visited = tempFemale[1]
+			if !visited:
+				femaleList[index][1] = True
+			#param is 1-fitness, for use in ppf
+			mParam = 1-male.getFitness()
+			fParam = 1-female.getFitness()
+			mThreshold = st.norm.ppf(mParam)
+			fThreshold = st.norm.ppf(fParam)
+			"""
+			there's a question here whether they share the same
+			random number or each get their own. For now they each
+			get their own random number
+			"""
+			mRandom = random.normalvariate(0,1)
+			fRandom = random.normalvariate(0,1)
+			if mRandom > mThreshold and fRandom > fThreshold:
+				if male.mate() and female.mate():
+					femaleList.remove(female)
+			for ind in femaleList:
+				if !ind[1]:
+					break
+				else:
+					femRuns += 1
+
+	""" get methods """
+	def getSize(self):
+		return self._size
+
+	def getPop(self):
+		return self._population
 
 
 
