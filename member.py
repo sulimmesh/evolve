@@ -101,6 +101,8 @@ class Member:
 		if self.isAvailable() and self._sex:
 			self._isGestating = True
 			return True
+		elif self.isAvailable() and !self._sex:
+			return True
 		else:
 			return False
 	""" 
