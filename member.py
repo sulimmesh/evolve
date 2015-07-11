@@ -6,6 +6,8 @@ _REC = 1
 class Member:
 	""" class for individual member of 
 	the sample population
+	
+	TODO: implement multiple alleles
 	"""
 
 
@@ -21,13 +23,12 @@ class Member:
 		when two different alleles meet, the overall
 		fitness is calculated by taking the dom
 
-		TODO: implement multiple alleles
-		TODO: add age, sex, gestation, child_rearing,
-		lifespan, sexual_maturity attributes
-
 		attributes of type:
 		dominant: boolean -> if allele is dom/rec
 		pref: array of floats for dom and rec fitness
+
+		Args:
+		m_type and p_type: maternal and paternal Traits
 		total_fitness: float representing the fitness of the member
 		phenotype: boolean -> whether the member expresses the 
 		   dom or rec trait
@@ -71,7 +72,7 @@ class Member:
 				fitness = self._m_type.getPref(_DOM)
 			else:
 				fitness = self._m_type.getPref(_REC)
-		return fitness		
+		return fitness
 
 	"""
 	finds the phenotype of the member
@@ -87,7 +88,7 @@ class Member:
 	"""
 	returns whether the member is available for mating
 	"""
-	def isAvailable(self):
+	def _isAvailable(self):
 		if self._age >= self._sexual_maturity:
 			if self._isGestating or self._isRearing:
 				return False
@@ -98,7 +99,7 @@ class Member:
 
 	""" takes an available member and impregnates them if female """
 	def mate(self):
-		if self.isAvailable() and self._sex:
+		if self._isAvailable() and self._sex:
 			self._isGestating = True
 			return True
 		elif self.isAvailable() and !self._sex:
@@ -112,6 +113,11 @@ class Member:
 	def age(self):
 		self._age += 1
 
+	""" status checkers for statistical purposes"""
+	def isGestating(self):
+		return self._isGestating
+	def isChildRearing(self):
+		return self._isRearing
 
 	""" get methods"""
 	def getFitness(self):
@@ -131,6 +137,7 @@ class Member:
 	def getSexualMaturity(self):
 		return self._sexual_maturity
 	def getAvailability(self):
-		return None
+		return self._isAvailable()
+
 
 
