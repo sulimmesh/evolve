@@ -84,9 +84,29 @@ class Member:
 			return True
 		return False
 
-	def _isAvailable(self):
-		return None
+	"""
+	returns whether the member is available for mating
+	"""
+	def isAvailable(self):
+		if self._age >= self._sexual_maturity:
+			if self._isGestating or self._isRearing:
+				return False
+			else:
+				return True
+		else:
+			return False
 
+	""" takes an available member and impregnates them if female """
+	def mate(self):
+		if self.isAvailable() and self._sex:
+			self._isGestating = True
+			return True
+		else:
+			return False
+	""" 
+	ages the member 1 year -> this could be changed to a given
+	time step
+	"""
 	def age(self):
 		self._age += 1
 
