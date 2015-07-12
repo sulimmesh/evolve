@@ -1,4 +1,5 @@
 import trait
+import random
 #declaring class constants here so no magic numbers
 _DOM = 0
 _REC = 1
@@ -104,7 +105,7 @@ class Member:
 	@private
 	"""		
 	def _createChild(self, paternal_type):
-		if random.randint(0,1) = 1:
+		if random.randint(0,1) == 1:
 			maternal_type = self._m_type
 		else:
 			maternal_type = self._p_type
@@ -129,14 +130,14 @@ class Member:
 	def mate(self, partner):
 		if self._isAvailable() and self._sex:
 			partner_type = None
-			if random.randint(0,1) = 1:
+			if random.randint(0,1) == 1:
 				partner_type = partner.getMaternalType()
 			else:
 				partner_type = partner.getPaternalType()
 			self._isGestating = True
 			self._createChild(partner_type)
 			return True
-		elif self.isAvailable() and !self._sex:
+		elif self._isAvailable() and not self._sex:
 			return True
 		else:
 			return False
@@ -164,7 +165,7 @@ class Member:
 	""" get methods"""
 	def getFitness(self):
 		return self._total_fitness
-	def getPhenotype(self):s
+	def getPhenotype(self):
 		return self._phenotype
 	def getAge(self):
 		return self._age

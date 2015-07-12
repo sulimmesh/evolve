@@ -43,9 +43,9 @@ class Population:
 			#approximately a 75/25 split of dom/rec
 			index_1 = random.randint(0,1)
 			index_2 = random.randint(0,1)
-			ind = member.Member(
-				traits[index_1],
-				traits[index_2])
+
+			ind = member.Member(traits[index_1], traits[index_2],
+				5, random.choice([True, False]),2,2,15,2)
 			population.append(ind)
 		return population
 
@@ -76,19 +76,27 @@ class Population:
 					femaleList.append([ind,False])
 				else: 
 					maleList.append(ind)
-		while len(femaleList) > 0 or femRuns < 1:
-			male = random.choice(maleList)
-			tempFemale = random.choice(femaleList)
+		while len(femaleList) > 0 and femRuns < 1:
+			if len(maleList) > 0:
+				male = random.choice(maleList)
+			else:
+				return None
+			if len(femaleList) > 0:
+				tempFemale = random.choice(femaleList)
+			else:
+				return None
 			index = femaleList.index(tempFemale)
 			female = tempFemale[0]
 			visited = tempFemale[1]
-			if !visited:
+			if not visited:
 				femaleList[index][1] = True
 			#param is 1-fitness, for use in ppf
 			mParam = 1-male.getFitness()
 			fParam = 1-female.getFitness()
+			print mParam, fParam
 			mThreshold = st.norm.ppf(mParam)
 			fThreshold = st.norm.ppf(fParam)
+			print "thresholds assigned"
 			"""
 			there's a question here whether they share the same
 			random number or each get their own. For now they each
@@ -96,11 +104,20 @@ class Population:
 			"""
 			mRandom = random.normalvariate(0,1)
 			fRandom = random.normalvariate(0,1)
+			""" 
+			the problem here is that if the even if both have a 50%\ chance of
+			mating successfully alone, when combined in this way, that chacnce alread
+			drops to 25%. This means that only a small proportion of the total eligible
+			population successfully mates each cycle. 
+			 """
 			if mRandom > mThreshold and fRandom > fThreshold:
-				if male.mate() and female.mate():
+				if male.mate(female) and female.mate(male) and female in femaleList:
+					print "current female length: "+str(len(femaleList))
 					femaleList.remove(female)
+					print "new length: "+str(len(femaleList))
 			for ind in femaleList:
-				if !ind[1]:
+				print "has been visited: "+str(ind[1])
+				if not ind[1]:
 					break
 				else:
 					femRuns += 1
