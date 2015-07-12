@@ -136,8 +136,10 @@ class Member:
 				partner_type = partner.getPaternalType()
 			self._isGestating = True
 			self._createChild(partner_type)
+			#print "Member is female and available, returning true"
 			return True
 		elif self._isAvailable() and not self._sex:
+			#print "Member is male and available, returning true"
 			return True
 		else:
 			return False

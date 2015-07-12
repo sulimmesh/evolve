@@ -77,6 +77,7 @@ class Population:
 				else: 
 					maleList.append(ind)
 		while len(femaleList) > 0 and femRuns < 1:
+			#print "starting cycle"
 			if len(maleList) > 0:
 				male = random.choice(maleList)
 			else:
@@ -93,10 +94,9 @@ class Population:
 			#param is 1-fitness, for use in ppf
 			mParam = 1-male.getFitness()
 			fParam = 1-female.getFitness()
-			print mParam, fParam
 			mThreshold = st.norm.ppf(mParam)
 			fThreshold = st.norm.ppf(fParam)
-			print "thresholds assigned"
+			#print "thresholds assigned"
 			"""
 			there's a question here whether they share the same
 			random number or each get their own. For now they each
@@ -111,16 +111,22 @@ class Population:
 			population successfully mates each cycle. 
 			 """
 			if mRandom > mThreshold and fRandom > fThreshold:
-				if male.mate(female) and female.mate(male) and female in femaleList:
-					print "current female length: "+str(len(femaleList))
-					femaleList.remove(female)
-					print "new length: "+str(len(femaleList))
+				#print "both above threshold"
+				if male.mate(female) and female.mate(male):
+					#print "current female length: "+str(len(femaleList))
+					femaleList.remove(tempFemale)
+					#print "new length: "+str(len(femaleList))
+			numTrue = 0
 			for ind in femaleList:
-				print "has been visited: "+str(ind[1])
+				#print "has been visited: "+str(ind[1])
 				if not ind[1]:
 					break
-				else:
-					femRuns += 1
+				else: 
+					numTrue += 1
+			if numTrue == len(femaleList):
+				femRuns += 1
+
+			#print
 
 	""" get methods """
 	def getSize(self):
