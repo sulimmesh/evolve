@@ -1,7 +1,9 @@
 import member
 import trait
 import population
+import time
 
+t0 = time.time()
 PREF = [0.6, 0.4]
 SIZE = 2000
 
@@ -17,3 +19,5 @@ for ind in pop.getPop():
 		else:
 			notPregnant += 1
 print "Rate of pregnancy: "+str(float(pregnant)/(pregnant+notPregnant)*100)
+t1 = time.time()
+print "With population size N="+str(SIZE)+" Total runtime was: "+str(round(t1-t0,5))+" seconds"

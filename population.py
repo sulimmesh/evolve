@@ -69,6 +69,8 @@ class Population:
 		maleList = []
 		femaleList = []
 		femRuns = 0
+		numTrue = 0
+		runs = 0
 		for ind in self._population:
 			if ind.getAvailability():
 				if ind.getSex():
@@ -77,6 +79,7 @@ class Population:
 				else: 
 					maleList.append(ind)
 		while len(femaleList) > 0 and femRuns < 1:
+			runs += 1
 			#print "starting cycle"
 			if len(maleList) > 0:
 				male = random.choice(maleList)
@@ -91,6 +94,7 @@ class Population:
 			visited = tempFemale[1]
 			if not visited:
 				femaleList[index][1] = True
+				numTrue += 1
 			#param is 1-fitness, for use in ppf
 			mParam = 1-male.getFitness()
 			fParam = 1-female.getFitness()
@@ -115,18 +119,21 @@ class Population:
 				if male.mate(female) and female.mate(male):
 					#print "current female length: "+str(len(femaleList))
 					femaleList.remove(tempFemale)
+					numTrue -= 1
 					#print "new length: "+str(len(femaleList))
-			numTrue = 0
+			"""
 			for ind in femaleList:
 				#print "has been visited: "+str(ind[1])
 				if not ind[1]:
 					break
 				else: 
 					numTrue += 1
+			"""
 			if numTrue == len(femaleList):
 				femRuns += 1
 
 			#print
+		print "runs: "+str(runs)
 
 	""" get methods """
 	def getSize(self):
