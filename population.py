@@ -1,7 +1,9 @@
 import member
 import trait 
 import random
+import copy
 import scipy.stats as st
+import time
 
 class Population:
 	"""
@@ -21,6 +23,8 @@ class Population:
 	def __init__(self, size, preference):
 		self._size = size
 		self._preference = preference
+		self._maleList = None
+		self._femaleList = None
 		self._population = self._genPopulation()
 
 	"""
@@ -36,6 +40,8 @@ class Population:
 	@private
 	"""
 	def _genPopulation(self):
+		femaleList = []
+		maleList = []
 		size = self._size
 		traits = self._genTraits(self._preference)
 		population = []
@@ -47,6 +53,15 @@ class Population:
 			ind = member.Member(traits[index_1], traits[index_2],
 				5, random.choice([True, False]),2,2,15,2)
 			population.append(ind)
+		for ind in population:
+			if ind.getAvailability():
+				if ind.getSex():
+					#need to check if we've run on this female
+					femaleList.append(ind)
+				else: 
+					maleList.append(ind)
+		self._maleList = maleList
+		self._femaleList = femaleList
 		return population
 
 	""" returns nothing. removes dead members from the population """
@@ -66,11 +81,17 @@ class Population:
 	fail, then they must wait for the next cycle.
 	"""
 	def runMating(self):
-		maleList = []
+		segment1 = 0
+		segment2 = 0
+		segment3 = 0
+		maleList = self._maleList[:]
 		femaleList = []
+		for ind in self._femaleList:
+			femaleList.append([ind, False])
 		femRuns = 0
 		numTrue = 0
 		runs = 0
+		"""
 		for ind in self._population:
 			if ind.getAvailability():
 				if ind.getSex():
@@ -78,9 +99,13 @@ class Population:
 					femaleList.append([ind,False])
 				else: 
 					maleList.append(ind)
+			runs += 1
+		"""
 		while len(femaleList) > 0 and femRuns < 1:
 			runs += 1
 			#print "starting cycle"
+			#checking time for this section
+			t0 = time.time()
 			if len(maleList) > 0:
 				male = random.choice(maleList)
 			else:
@@ -95,7 +120,12 @@ class Population:
 			if not visited:
 				femaleList[index][1] = True
 				numTrue += 1
+			t1 = time.time()
+			#end segment1
+			segment1 += t1-t0
+			#checking time for normal dist section
 			#param is 1-fitness, for use in ppf
+			t0 = time.time()
 			mParam = 1-male.getFitness()
 			fParam = 1-female.getFitness()
 			mThreshold = st.norm.ppf(mParam)
@@ -108,12 +138,15 @@ class Population:
 			"""
 			mRandom = random.normalvariate(0,1)
 			fRandom = random.normalvariate(0,1)
+			t1 = time.time()
+			segment2 += t1-t0
 			""" 
 			the problem here is that if the even if both have a 50%\ chance of
 			mating successfully alone, when combined in this way, that chacnce alread
 			drops to 25%. This means that only a small proportion of the total eligible
 			population successfully mates each cycle. 
 			 """
+			t0 = time.time()
 			if mRandom > mThreshold and fRandom > fThreshold:
 				#print "both above threshold"
 				if male.mate(female) and female.mate(male):
@@ -121,6 +154,8 @@ class Population:
 					femaleList.remove(tempFemale)
 					numTrue -= 1
 					#print "new length: "+str(len(femaleList))
+			t1 = time.time()
+			segment3 += t1-t0
 			"""
 			for ind in femaleList:
 				#print "has been visited: "+str(ind[1])
@@ -132,8 +167,10 @@ class Population:
 			if numTrue == len(femaleList):
 				femRuns += 1
 
-			#print
 		print "runs: "+str(runs)
+		print "Segment 1 took "+str(round(segment1,5))+" seconds"
+		print "Segment 2 took "+str(round(segment2,5))+" seconds"
+		print "Segment 3 took "+str(round(segment3,5))+" seconds"
 
 	""" get methods """
 	def getSize(self):
@@ -141,6 +178,11 @@ class Population:
 
 	def getPop(self):
 		return self._population
+
+	def getMaleList(self):
+		return self._maleList
+	def getFemaleList(self):
+		return self._femaleList
 
 
 

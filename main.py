@@ -5,7 +5,7 @@ import time
 
 t0 = time.time()
 PREF = [0.6, 0.4]
-SIZE = 2000
+SIZE = 1000
 
 pop = population.Population(SIZE,PREF)
 pop.runMating()
