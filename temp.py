@@ -23,3 +23,12 @@ print "total success: "+str(success)
 print "total failure: "+str(failure)
 print "percent succes: "+str((success/float(runs)))
 """
+import random, time
+class Thing:
+	def __init__(self, x):
+		self.x = x
+thing = Thing(5)
+array = [[thing, True]]
+choice = random.choice(array)
+choice[1] = False
+print array

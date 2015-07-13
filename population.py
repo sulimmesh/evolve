@@ -87,7 +87,7 @@ class Population:
 		maleList = self._maleList[:]
 		femaleList = []
 		for ind in self._femaleList:
-			femaleList.append([ind, False])
+			femaleList.append([ind, False, True])
 		femRuns = 0
 		numTrue = 0
 		runs = 0
@@ -111,33 +111,42 @@ class Population:
 			else:
 				return None
 			if len(femaleList) > 0:
-				tempFemale = random.choice(femaleList)
+				index = random.randint(0,len(femaleList)-1)
+				tempFemale = femaleList[index]#random.choice(femaleList) #
 			else:
 				return None
-			index = femaleList.index(tempFemale)
 			female = tempFemale[0]
 			visited = tempFemale[1]
 			if not visited:
-				femaleList[index][1] = True
+				tempFemale[1] = True
 				numTrue += 1
 			t1 = time.time()
 			#end segment1
 			segment1 += t1-t0
 			#checking time for normal dist section
 			#param is 1-fitness, for use in ppf
+			"""
+			I've replaced the normalvariate technique for now
+			with simple random integers. This way, if the random
+			int is greater than the threshold, the mating is a success.
+			This has the same concept behind it as the normalvariate 
+			solution did, but it runs a lot faster at large N so is
+			currently preferred.
+			"""
 			t0 = time.time()
 			mParam = 1-male.getFitness()
 			fParam = 1-female.getFitness()
-			mThreshold = st.norm.ppf(mParam)
-			fThreshold = st.norm.ppf(fParam)
+			mThreshold = mParam*100 #st.norm.ppf(mParam)
+			fThreshold = fParam*100#st.norm.ppf(fParam)
 			#print "thresholds assigned"
 			"""
 			there's a question here whether they share the same
 			random number or each get their own. For now they each
 			get their own random number
 			"""
-			mRandom = random.normalvariate(0,1)
-			fRandom = random.normalvariate(0,1)
+			mRandom = random.randint(0,100) #random.normalvariate(0,1)
+			fRandom = random.randint(0,100) #random.normalvariate(0,1)
+			#point = random.normalvariate(0,1)
 			t1 = time.time()
 			segment2 += t1-t0
 			""" 
@@ -151,7 +160,8 @@ class Population:
 				#print "both above threshold"
 				if male.mate(female) and female.mate(male):
 					#print "current female length: "+str(len(femaleList))
-					femaleList.remove(tempFemale)
+					#femaleList.remove(tempFemale)
+					femaleList.pop(index)
 					numTrue -= 1
 					#print "new length: "+str(len(femaleList))
 			t1 = time.time()
