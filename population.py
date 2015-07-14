@@ -1,8 +1,6 @@
 import member
 import trait 
 import random
-import copy
-import scipy.stats as st
 import time
 
 class Population:
@@ -63,15 +61,6 @@ class Population:
 		self._maleList = maleList
 		self._femaleList = femaleList
 		return population
-
-	""" returns nothing. removes dead members from the population """
-	def agePop(self):
-		for ind in self._population:
-			newMember = ind.age()
-			if newMember != None:
-				self._population.append(newMember)
-			if ind.getAge() > ind.getLifespan():
-				self._population.remove(ind)
 
 	""" 
 	returns nothing.
@@ -181,6 +170,15 @@ class Population:
 		print "Segment 1 took "+str(round(segment1,5))+" seconds"
 		print "Segment 2 took "+str(round(segment2,5))+" seconds"
 		print "Segment 3 took "+str(round(segment3,5))+" seconds"
+
+	""" returns nothing. removes dead members from the population """
+	def agePop(self):
+		for ind in self._population:
+			newMember = ind.age()
+			if newMember != None:
+				self._population.append(newMember)
+			if ind.getAge() > ind.getLifespan():
+				self._population.remove(ind)
 
 	""" get methods """
 	def getSize(self):
