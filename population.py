@@ -15,14 +15,18 @@ class Population:
 	   <size>
 
 	   TODO: add remaining class methods
-	   TODO: should the mating algorithm go here?
 
 	"""
-	def __init__(self, size, preference):
+	def __init__(self, size, preference, sexual_maturity, gestation, 
+		child_rearing, lifespan):
 		self._size = size
 		self._preference = preference
 		self._maleList = None
 		self._femaleList = None
+		self._sexual_maturity = sexual_maturity
+		self._gestation = gestation
+		self._child_rearing = child_rearing
+		self._lifespan = lifespan
 		self._population = self._genPopulation()
 
 	"""
@@ -47,16 +51,18 @@ class Population:
 			#approximately a 75/25 split of dom/rec
 			index_1 = random.randint(0,1)
 			index_2 = random.randint(0,1)
-
+			age = int(random.normalvariate(int(self._lifespan/2),int(self._lifespan/4)))
+			if age < 0 or age >= self._lifespan:
+				age = random.normalvariate(int(self._lifespan/2),0)
 			ind = member.Member(traits[index_1], traits[index_2],
-				5, random.choice([True, False]),2,2,15,2)
+				age, random.choice([True, False]),self._gestation,
+				self._child_rearing,self._lifespan,
+				self._sexual_maturity)
 			population.append(ind)
-		for ind in population:
 			if ind.getAvailability():
 				if ind.getSex():
-					#need to check if we've run on this female
 					femaleList.append(ind)
-				else: 
+				else:
 					maleList.append(ind)
 		self._maleList = maleList
 		self._femaleList = femaleList
@@ -104,8 +110,6 @@ class Population:
 
 		while len(femaleList) > 0 and femRuns < 1:
 			runs += 1
-			#print "starting cycle"
-			#checking time for this section
 			t0 = time.time()
 			members = self._randomChoice(maleList, femaleList, numTrue)
 			male = members[0]
@@ -113,10 +117,7 @@ class Population:
 			index = members[2]
 			numTrue = members[3]
 			t1 = time.time()
-			#end segment1
 			segment1 += t1-t0
-			#checking time for normal dist section
-			#param is 1-fitness, for use in ppf
 			"""
 			I've replaced the normalvariate technique for now
 			with simple random integers. This way, if the random
@@ -128,17 +129,15 @@ class Population:
 			t0 = time.time()
 			mParam = 1-male.getFitness()
 			fParam = 1-female.getFitness()
-			mThreshold = mParam*100 #st.norm.ppf(mParam)
-			fThreshold = fParam*100#st.norm.ppf(fParam)
-			#print "thresholds assigned"
+			mThreshold = mParam*100 
+			fThreshold = fParam*100
 			"""
 			there's a question here whether they share the same
 			random number or each get their own. For now they each
 			get their own random number
 			"""
-			mRandom = random.randint(0,100) #random.normalvariate(0,1)
-			fRandom = random.randint(0,100) #random.normalvariate(0,1)
-			#point = random.normalvariate(0,1)
+			mRandom = random.randint(0,100)
+			fRandom = random.randint(0,100)
 			t1 = time.time()
 			segment2 += t1-t0
 			""" 
@@ -165,12 +164,24 @@ class Population:
 
 	""" returns nothing. removes dead members from the population """
 	def agePop(self):
+		t0 = time.time()
 		for ind in self._population:
 			newMember = ind.age()
 			if newMember != None:
 				self._population.append(newMember)
 			if ind.getAge() > ind.getLifespan():
 				self._population.remove(ind)
+				if ind.getSex():
+					self._femaleList.remove(ind)
+				else:
+					self._maleList.remove(ind)
+			elif ind.getAge() >= ind.getSexualMaturity():
+				if ind.getSex():
+					self._femaleList.append(ind)
+				else:
+					self._maleList.append(ind)
+		t1 = time.time()
+		print "Population aging took "+str(round(t1-t0,5))+" seconds"
 
 	""" get methods """
 	def getSize(self):
