@@ -62,6 +62,27 @@ class Population:
 		self._femaleList = femaleList
 		return population
 
+	"""
+	method to choose random elements from male and female lists
+	@prviate
+	"""
+	def _randomChoice(self, maleList, femaleList, numTrue):
+		if len(maleList) > 0:
+			male = random.choice(maleList)
+		else:
+			male = None
+		if len(femaleList) > 0:
+			index = random.randint(0,len(femaleList)-1)
+			tempFemale = femaleList[index]
+			female = tempFemale[0]
+			visited = tempFemale[1]
+			if not visited:
+				tempFemale[1] = True
+				numTrue += 1
+		else:
+			female = None
+		return male, female, index, numTrue
+
 	""" 
 	returns nothing.
 	sorts the population into eligble male and female lists.
@@ -76,39 +97,21 @@ class Population:
 		maleList = self._maleList[:]
 		femaleList = []
 		for ind in self._femaleList:
-			femaleList.append([ind, False, True])
+			femaleList.append([ind, False])
 		femRuns = 0
 		numTrue = 0
 		runs = 0
-		"""
-		for ind in self._population:
-			if ind.getAvailability():
-				if ind.getSex():
-					#need to check if we've run on this female
-					femaleList.append([ind,False])
-				else: 
-					maleList.append(ind)
-			runs += 1
-		"""
+
 		while len(femaleList) > 0 and femRuns < 1:
 			runs += 1
 			#print "starting cycle"
 			#checking time for this section
 			t0 = time.time()
-			if len(maleList) > 0:
-				male = random.choice(maleList)
-			else:
-				return None
-			if len(femaleList) > 0:
-				index = random.randint(0,len(femaleList)-1)
-				tempFemale = femaleList[index]#random.choice(femaleList) #
-			else:
-				return None
-			female = tempFemale[0]
-			visited = tempFemale[1]
-			if not visited:
-				tempFemale[1] = True
-				numTrue += 1
+			members = self._randomChoice(maleList, femaleList, numTrue)
+			male = members[0]
+			female = members[1]
+			index = members[2]
+			numTrue = members[3]
 			t1 = time.time()
 			#end segment1
 			segment1 += t1-t0
@@ -146,23 +149,12 @@ class Population:
 			 """
 			t0 = time.time()
 			if mRandom > mThreshold and fRandom > fThreshold:
-				#print "both above threshold"
 				if male.mate(female) and female.mate(male):
-					#print "current female length: "+str(len(femaleList))
-					#femaleList.remove(tempFemale)
 					femaleList.pop(index)
 					numTrue -= 1
-					#print "new length: "+str(len(femaleList))
 			t1 = time.time()
 			segment3 += t1-t0
-			"""
-			for ind in femaleList:
-				#print "has been visited: "+str(ind[1])
-				if not ind[1]:
-					break
-				else: 
-					numTrue += 1
-			"""
+
 			if numTrue == len(femaleList):
 				femRuns += 1
 
