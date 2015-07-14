@@ -5,7 +5,7 @@ import time
 
 t0 = time.time()
 PREF = [0.6, 0.4]
-SIZE = 100
+SIZE = 10000
 details = {
 	"lifespan": 15,
 	"gestation": 2,
@@ -17,7 +17,7 @@ pop = population.Population(SIZE,PREF,**details)
 #pop.runMating()
 for i in range(0,10):
 	pop.agePop()
-	print pop.getSize()
+print pop.getSize()
 #pregnant = 0
 #notPregnant = 0
 t1 = time.time()

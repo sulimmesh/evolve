@@ -185,7 +185,7 @@ class Population:
 
 	""" get methods """
 	def getSize(self):
-		return self._size
+		return len(self._population)
 
 	def getPop(self):
 		return self._population
