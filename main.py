@@ -12,6 +12,7 @@ pop.runMating()
 pop.agePop()
 pregnant = 0
 notPregnant = 0
+t1 = time.time()
 for ind in pop.getPop():
 	if ind.getSex():
 		if ind.isGestating():
@@ -19,5 +20,4 @@ for ind in pop.getPop():
 		else:
 			notPregnant += 1
 print "Rate of pregnancy: "+str(float(pregnant)/(pregnant+notPregnant)*100)
-t1 = time.time()
 print "With population size N="+str(SIZE)+" Total runtime was: "+str(round(t1-t0,5))+" seconds"

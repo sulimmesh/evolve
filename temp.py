@@ -24,11 +24,10 @@ print "total failure: "+str(failure)
 print "percent succes: "+str((success/float(runs)))
 """
 import random, time
-class Thing:
-	def __init__(self, x):
-		self.x = x
-thing = Thing(5)
-array = [[thing, True]]
-choice = random.choice(array)
-choice[1] = False
-print array
+t0 = time.time()
+size = 1000
+x = 0
+for i in range(0,size):
+	x += 1
+t1 = time.time()
+print "N="+str(size)+" took: "+str(round(t1-t0,5))+" seconds"
