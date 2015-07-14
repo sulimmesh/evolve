@@ -165,21 +165,23 @@ class Population:
 	""" returns nothing. removes dead members from the population """
 	def agePop(self):
 		t0 = time.time()
+		total_pop = []
+		female_pop = []
+		male_pop = []
 		for ind in self._population:
 			newMember = ind.age()
 			if newMember != None:
-				self._population.append(newMember)
-			if ind.getAge() > ind.getLifespan():
-				self._population.remove(ind)
-				if ind.getSex():
-					self._femaleList.remove(ind)
-				else:
-					self._maleList.remove(ind)
-			elif ind.getAge() >= ind.getSexualMaturity():
-				if ind.getSex():
-					self._femaleList.append(ind)
-				else:
-					self._maleList.append(ind)
+				total_pop.append(newMember)
+			if ind.getAge() <= ind.getLifespan():
+				total_pop.append(ind)
+				if ind.getAge() >= ind.getSexualMaturity():
+					if ind.getSex():
+						female_pop.append(ind)
+					else:
+						male_pop.append(ind)
+		self._population = total_pop
+		self._femaleList = female_pop
+		self._maleList = male_pop
 		t1 = time.time()
 		print "Population aging took "+str(round(t1-t0,5))+" seconds"
 
