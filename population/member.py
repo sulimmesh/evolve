@@ -12,7 +12,7 @@ class Member:
 	"""
 
 
-	def __init__(self, m_type, p_type, age, sex, gestation,
+	def __init__(self, genome, age, sex, gestation,
 		child_rearing, lifespan, sexual_maturity, 
 		isGestating=False, isRearing=False, child=None):
 		"""
@@ -29,7 +29,8 @@ class Member:
 		pref: array of floats for dom and rec fitness
 
 		Args:
-		m_type and p_type: maternal and paternal Traits
+		genome: dictionary containing the different traits for
+		   the member. Replaces m_type and f_type
 		total_fitness: float representing the fitness of the member
 		phenotype: boolean -> whether the member expresses the 
 		   dom or rec trait
@@ -42,8 +43,7 @@ class Member:
 		isGestating: boolean, if member is pregnant
 		isRearing: boolean, if member is raising a child
 		"""
-		self._m_type = m_type
-		self._p_type = p_type
+		self._genome = genome
 		self._total_fitness = self._calcFitness()
 		self._phenotype = self._calcPhenotype()
 		self._age = age
@@ -61,29 +61,31 @@ class Member:
 	@private
 	"""
 	def _calcFitness(self):
-		m_dominance = self._m_type.getDom()
-		p_dominance = self._p_type.getDom()
+		raw_fitness = 0
 		fitness = None
-		if m_dominance == p_dominance:
-			if m_dominance == True:
-				fitness = self._m_type.getPref(_DOM)
+		for key in self._genome.keys():
+			m_dominance = self._genome[key][0].getDom()
+			p_dominance = self._genome[key][1].getDom()
+			if m_dominance == p_dominance:
+				if m_dominance == True:
+					fitness += self._genome[key][0].getPref(_DOM)
+				else:
+					fitness += self._genome[key][0].getPref(_REC)
 			else:
-				fitness = self._m_type.getPref(_REC)
-		else:
-			if m_dominance == True:
-				fitness = self._m_type.getPref(_DOM)
-			else:
-				fitness = self._m_type.getPref(_REC)
-		return fitness
+				if m_dominance == True:
+					fitness += self._genome[key][0].getPref(_DOM)
+				else:
+					fitness += self._genome[key][0].getPref(_REC)
+		return (fitness/len(self._genome))
 
 	"""
 	finds the phenotype of the member
 	@private
 	"""
-	def _calcPhenotype(self):
-		if self._m_type.getDom() == True:
+	def _calcPhenotype(self, key):
+		if self._genome[key][0].getDom() == True:
 			return True
-		if self._p_type.getDom() == True:
+		if self._genome[key][1].getDom() == True:
 			return True
 		return False
 
@@ -103,24 +105,27 @@ class Member:
 	""" 
 	creates a child member within a gestating female member
 	@private
-	"""		
+	"""	
 	def _createChild(self, paternal_type):
-		if random.randint(0,1) == 1:
-			maternal_type = self._m_type
-		else:
-			maternal_type = self._p_type
-		self._child = [maternal_type, paternal_type,0]
+		child_genome = {}
+		for key in self._genome.keys():
+			if random.randint(0,1) == 1:
+				maternal_type = self._genome[key][0]
+			else:
+				maternal_type = self._genome[key][1]
+			child_genome[key] = [maternal_type,paternal_type[key]]
+		gestation = 0
+		self._child = [child_genome,gestation]
 
 	"""
 	takes the child attribute and returns a new member
 	"""
 	def _birth(self):
-		if self._isGestating and self._child[2] >= self._gestation:
-			m_type = self._child[0]
-			p_type = self._child[1]
+		if self._isGestating and self._child[1] >= self._gestation:
+			genome = self._child[0]
 			#these numbers need to change and are just placeholders
 			#for now
-			newMember = Member(m_type,p_type,0,
+			newMember = Member(genome,0,
 				random.choice([True, False]),2,2,15,2)
 			return newMember
 		else:
@@ -129,17 +134,18 @@ class Member:
 	""" takes an available member and impregnates them if female """
 	def mate(self, partner):
 		if self._isAvailable() and self._sex:
-			partner_type = None
-			if random.randint(0,1) == 1:
-				partner_type = partner.getMaternalType()
-			else:
-				partner_type = partner.getPaternalType()
+			partner_type = {}
+			for key in self._genome.keys():
+				if random.randint(0,1) == 1:
+					#need to change how this works to make this work properly
+					#need to go through all the keys of the genome and pick types
+					partner_type[key] = partner.getMaternalType(key)
+				else:
+					partner_type[key] = partner.getPaternalType(key)
 			self._isGestating = True
 			self._createChild(partner_type)
-			#print "Member is female and available, returning true"
 			return True
 		elif self._isAvailable() and not self._sex:
-			#print "Member is male and available, returning true"
 			return True
 		else:
 			return False
@@ -150,8 +156,8 @@ class Member:
 	def age(self):
 		self._age += 1
 		if self._isGestating:
-			self._child[2] += 1
-			if self._child[2] >= self._gestation:
+			self._child[1] += 1
+			if self._child[1] >= self._gestation:
 				return self._birth()
 			else:
 				return None
@@ -183,10 +189,10 @@ class Member:
 		return self._sexual_maturity
 	def getAvailability(self):
 		return self._isAvailable()
-	def getPaternalType(self):
-		return self._p_type
-	def getMaternalType(self):
-		return self._m_type
+	def getPaternalType(self, key):
+		return self._genome[key][1]
+	def getMaternalType(self, key):
+		return self._genome[key][0]
 
 
 
