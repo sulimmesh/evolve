@@ -5,7 +5,7 @@ import time
 
 t0 = time.time()
 PREF = [0.6, 0.4]
-SIZE = 100
+SIZE = 1000
 details = {
 	"lifespan": 15,
 	"gestation": 2,
@@ -17,7 +17,7 @@ pop = population.Population(SIZE,PREF,**details)
 t3 = time.time()
 print "With population size N="+str(SIZE)+" setup runtime was: "+str(round(t3-t2,5))+" seconds"
 #pop.runMating()
-for i in range(0,10):
+for i in range(0,1):
 	pop.agePop()
 print pop.getSize()
 #pregnant = 0

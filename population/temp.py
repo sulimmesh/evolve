@@ -25,7 +25,7 @@ print "percent succes: "+str((success/float(runs)))
 """
 import random, time
 t0 = time.time()
-size = 1000
+size = 10000000
 x = 0
 for i in range(0,size):
 	x += 1
