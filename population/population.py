@@ -33,9 +33,12 @@ class Population:
 	method to create the dom/rec traits
 	"""
 	def _genTraits(self, preference):
-		dom = trait.Trait(True, preference)
-		rec = trait.Trait(False, preference)
-		traits = [dom, rec]
+		traits = {}
+		for pref in preference:
+			dom = trait.Trait(True, pref)
+			rec = trait.Trait(False, pref)
+			current_trait = [dom, rec]
+			traits[id(current_trait)] = current_trait
 		return traits
 	"""
 	method to generate the population from members
@@ -54,9 +57,9 @@ class Population:
 			age = int(random.normalvariate(int(self._lifespan/2),int(self._lifespan/4)))
 			if age < 0 or age >= self._lifespan:
 				age = random.normalvariate(int(self._lifespan/2),0)
-			ind = member.Member(traits[index_1], traits[index_2],
-				age, random.choice([True, False]),self._gestation,
-				self._child_rearing,self._lifespan,
+
+			ind = member.Member(traits, age, random.choice([True, False]),
+				self._gestation, self._child_rearing, self._lifespan,
 				self._sexual_maturity)
 			population.append(ind)
 			if ind.getAvailability():

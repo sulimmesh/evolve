@@ -4,7 +4,7 @@ import population
 import time
 
 t0 = time.time()
-PREF = [0.6, 0.4]
+PREF = [[0.6, 0.4]]
 SIZE = 1000
 details = {
 	"lifespan": 15,
