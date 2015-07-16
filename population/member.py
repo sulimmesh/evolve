@@ -45,7 +45,6 @@ class Member:
 		"""
 		self._genome = genome
 		self._total_fitness = self._calcFitness()
-		self._phenotype = self._calcPhenotype()
 		self._age = age
 		self._sex = sex
 		self._gestation = gestation
@@ -62,7 +61,7 @@ class Member:
 	"""
 	def _calcFitness(self):
 		raw_fitness = 0
-		fitness = None
+		fitness = 0
 		for key in self._genome.keys():
 			m_dominance = self._genome[key][0].getDom()
 			p_dominance = self._genome[key][1].getDom()
@@ -123,7 +122,7 @@ class Member:
 	def _birth(self):
 		if self._isGestating and self._child[1] >= self._gestation:
 			genome = self._child[0]
-			#these numbers need to change and are just placeholders
+			#these numbers need to change and are just placeholder
 			#for now
 			newMember = Member(genome,0,
 				random.choice([True, False]),2,2,15,2)
@@ -173,8 +172,8 @@ class Member:
 	""" get methods"""
 	def getFitness(self):
 		return self._total_fitness
-	def getPhenotype(self):
-		return self._phenotype
+	def getPhenotype(self,key):
+		return self._calcPhenotype(key)
 	def getAge(self):
 		return self._age
 	def getSex(self):
@@ -189,6 +188,8 @@ class Member:
 		return self._sexual_maturity
 	def getAvailability(self):
 		return self._isAvailable()
+	def getGenome(self):
+		return self._genome
 	def getPaternalType(self, key):
 		return self._genome[key][1]
 	def getMaternalType(self, key):
