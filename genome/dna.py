@@ -13,6 +13,15 @@ class DNA():
 			sequence += self._base_pairs[index]
 		return sequence
 
+	def runSequence(self,codons):
+		dna = self._sequence
+		codon = ""
+		protein = ""
+		for i in range(0,len(dna)-4,3):
+			codon = dna[i]+dna[i+1]+dna[i+2]
+			if codon in codons.keys():
+				protein += codons[codon]+" "
+		return protein
 	#get methods
 	def getSequence(self):
 		return self._sequence
