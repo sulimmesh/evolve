@@ -80,7 +80,7 @@ class DNA():
 		sequence = ""
 		codon_keys = self._codons.keys()
 		for i in range(0,self._length/3):
-			index = random.randint(0,len(codon_keys)-3)
+			index = random.randint(0,len(codon_keys)-4)
 			sequence += codon_keys[index]
 		return sequence
 
@@ -96,5 +96,6 @@ class DNA():
 	#get methods
 	def getSequence(self):
 		return self._sequence
-
+	def getCodons(self):
+		return self._codons
 
